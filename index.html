@@ -50,7 +50,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-of
 <body>
 <main>
 <h1>Cuestionario de cribado postraumático</h1>
-<p class="sub">Entre 28 y 35 preguntas, unos 10 minutos: cambian según lo que vayas respondiendo.</p>
+<p class="sub">Entre 29 y 41 preguntas, unos 12 minutos: cambian según lo que vayas respondiendo.</p>
 <div id="app"></div>
 </main>
 <script>
@@ -91,7 +91,13 @@ const Q=[
 {id:"g6",c:"G",s:"Emociones y relaciones",t:"¿Te has aislado o sentido muy distinto a los demás?",v:a=>a.q1>=2},
 {id:"h1",s:"Impacto en tu vida",t:"¿Hasta qué punto estas molestias han afectado tu trabajo, estudios, familia o relaciones?"},
 {id:"h2",s:"Impacto en tu vida",t:"¿Has usado alcohol, medicamentos u otras sustancias para aliviar lo que sientes?",f:1},
-{id:"h3",s:"Impacto en tu vida",t:"¿Has tenido pensamientos de hacerte daño o de que sería mejor no estar?",f:1}
+{id:"h3",s:"Impacto en tu vida",t:"¿Has tenido pensamientos de hacerte daño o de que sería mejor no estar?",f:1},
+{id:"i1",s:"Agresividad hacia otros",t:"¿Has tenido impulsos de gritar, empujar o golpear a alguien cuando te irritas?",f:1},
+{id:"i2",s:"Agresividad hacia otros",t:"¿Has tenido pensamientos de hacer daño a otra persona?",f:1},
+{id:"i3",s:"Agresividad hacia otros",t:"¿Has llegado a agredir a alguien de forma intensa, con insultos graves, empujones o golpes?",f:1},
+{id:"i4",s:"Agresividad hacia otros",t:"¿Has tenido arrebatos violentos, como romper objetos o golpear paredes?",f:1},
+{id:"i5",s:"Agresividad hacia otros",t:"¿Esos pensamientos de hacer daño se han dirigido a una persona concreta?",f:1,v:a=>a.i2>=1},
+{id:"i6",s:"Agresividad hacia otros",t:"¿Has sentido miedo de perder el control y hacerle daño a alguien?",f:1,v:a=>a.i2>=1}
 ];
 const sum=(a,cl)=>Q.filter(q=>q.c&&cl.includes(q.c)).reduce((s,q)=>s+(a[q.id]||0),0);
 const app=document.getElementById("app");
@@ -158,13 +164,19 @@ const lv=v=>SC[v].toLowerCase();
 const bars=[["Reexperimentación",B,"Sugiere que el evento sigue reviviéndose de forma involuntaria."],["Evitación",C,"Sugiere un esfuerzo sostenido por no entrar en contacto con lo ocurrido."],["Pensamientos y ánimo",D,"Sugiere que el evento ha dejado huella en cómo se ve a sí mismo, a los demás o en su ánimo."],["Alerta y activación",E,"Sugiere un estado de alerta y tensión mantenido."]].map(([l,ids,hint])=>{const m=ids.length*4,s=ids.reduce((x,i)=>x+(a[i]||0),0),p=Math.round(s/m*100),k=ids.filter(i=>(a[i]||0)>=2).length,pr=ids.filter(i=>(a[i]||0)>=1),lvl=p<25?"baja":p<50?"moderada":p<75?"alta":"muy alta";return `<div class="cl"><div class="t"><span>${l}</span><span>${p}%</span></div><div class="b"><i style="width:${p}%"></i></div><p class="sub" style="font-size:.88rem;margin:6px 0 0">Intensidad ${lvl}. ${k} de ${ids.length} síntomas con intensidad moderada o mayor durante el último mes.${pr.length?` Referidos: ${pr.map(i=>LBL[i]+" ("+lv(a[i])+")").join(", ")}.`:" No refirió síntomas en este grupo."}${k?" "+hint:""}</p></div>`}).join("");
 const hv=a.h3||0,rf=[(a.e2||0)>=2&&"conductas imprudentes",(a.h2||0)>=1&&"uso de sustancias para aliviar el malestar",(a.g3||0)>=2&&"sentimientos de derrota o falta de valor",(a.d6||0)>=3&&"distanciamiento marcado de los demás"].filter(Boolean);
 const risk=`<div class="box${hv>=1?" crit":""}"><strong>Indicios de daño propio o ideación suicida:</strong> ${hv===0?"el usuario indicó no haber tenido pensamientos de hacerse daño ni de que sería mejor no estar durante el último mes.":`el usuario refiere pensamientos de hacerse daño o de que sería mejor no estar con frecuencia «${FR[hv].toLowerCase()}» durante el último mes${hv>=3?", lo que requiere atención prioritaria":""}.`}${rf.length?` Factores asociados detectados: ${rf.join(", ")}.`:""} Esto no es una evaluación de riesgo suicida: si hay indicios, debe comunicarse al profesional de inmediato.</div>`;
+const ia=a.i1||0,ib=a.i2||0,ic=a.i3||0,ie=a.i5||0,ig=a.i6||0;
+const HL=[["i1","impulsos de gritar, empujar o golpear"],["i2","pensamientos de hacer daño a otra persona"],["i3","agresiones físicas o verbales intensas"],["i4","arrebatos violentos o romper objetos"],["i5","pensamientos dirigidos a una persona concreta"],["i6","temor a perder el control"]];
+const hp=HL.filter(([i])=>(a[i]||0)>=1);
+const hlv=(ib>=1&&(ie>=1||ig>=1))||ic>=3?"alta":(ib>=1||ic>=1||ia>=3)?"moderada":hp.length?"baja":"sin indicios";
+const hf=[(a.e1||0)>=2&&"irritabilidad marcada",(a.h2||0)>=1&&"uso de sustancias",(a.e2||0)>=2&&"conductas imprudentes"].filter(Boolean);
+const harm=`<div class="box${hlv==="alta"?" crit":""}"><strong>Indicios de agresividad o riesgo de dañar a otros:</strong> ${hlv==="sin indicios"?"el usuario no refirió impulsos, pensamientos ni conductas de agresión hacia otras personas durante el último mes.":`nivel de atención ${hlv}. Referido: ${hp.map(([i,l])=>l+" ("+FR[a[i]].toLowerCase()+")").join(", ")}.`}${hf.length?` Factores asociados: ${hf.join(", ")}.`:""}${hlv==="alta"||hlv==="moderada"?" La irritabilidad y los impulsos agresivos son frecuentes tras un trauma y se pueden tratar.":""} Esto no es una evaluación de riesgo de violencia: si hay pensamientos dirigidos a una persona concreta o miedo a perder el control, debe comunicarse al profesional de inmediato, y si hay peligro inminente, contactar con los servicios de emergencia.</div>`;
 const crisis=(a.h3||0)>=1?`<div class="box crit"><strong>Si tienes pensamientos de hacerte daño,</strong> no esperes: habla hoy con alguien de confianza y contacta con los servicios de emergencia o la línea de salud mental de tu país. No tienes que atravesarlo solo.</div>`:"";
 app.innerHTML=`<div class="card"><h2>Resultado orientativo</h2>${crisis}
 <div class="box"><strong>Aviso.</strong> ${DISC}</div>
 ${a.q1===0?"":`<p class="sub" style="margin:14px 0 4px">Perfil más cercano a tus respuestas</p>`}
 <p class="q" style="margin-top:0;font-size:1.45rem">${title}</p><p>${desc}</p>
 ${extra.length?`<p>${extra.map(e=>`<span class="tag">${e}</span>`).join("")}</p>`:""}
-${a.q1===0?"":`<p><strong>Intensidad global de síntomas:</strong> ${sev}</p>${bars}${risk}
+${a.q1===0?"":`<p><strong>Intensidad global de síntomas:</strong> ${sev}</p>${bars}${risk}${harm}
 <p class="sub" style="font-size:.88rem">Los porcentajes comparan tu puntuación con el máximo posible en cada grupo de síntomas.</p>`}
 <h2 style="font-size:1.1rem;margin-top:18px">Qué hacer con este resultado</h2>
 <p>Lleva esta hoja a un psicólogo o psiquiatra: le servirá como punto de partida, pero será él quien confirme, descarte o matice cualquier hipótesis mediante una entrevista clínica. Este cuestionario se inspira en los criterios del DSM-5 y la CIE-11, pero no es una escala clínica validada.</p>
