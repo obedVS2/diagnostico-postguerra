@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuestionario de cribado postraumático</title>
+<style>
+:root{--bg:#e9eff1;--card:#fff;--ink:#1c2a33;--mut:#566873;--acc:#1f6f78;--acc2:#d6e9eb;--line:#c9d6db;--warn:#fff3d6;--warnb:#c98a12;--crit:#fde4e1;--critb:#b3382c;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121c21;--card:#1a2830;--ink:#e6eef1;--mut:#9db0b9;--acc:#6ec3cc;--acc2:#23414a;--line:#2f4650;--warn:#3a3016;--warnb:#d9a63a;--crit:#42211f;--critb:#ef8a7e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121c21;--card:#1a2830;--ink:#e6eef1;--mut:#9db0b9;--acc:#6ec3cc;--acc2:#23414a;--line:#2f4650;--warn:#3a3016;--warnb:#d9a63a;--crit:#42211f;--critb:#ef8a7e;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{max-width:680px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,.q{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.25}
+h1{font-size:1.7rem;margin:8px 0 6px}
+h2{font-size:1.35rem;margin:0 0 8px}
+.sub{color:var(--mut);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 20px}
+.box{border-left:4px solid var(--warnb);background:var(--warn);padding:12px 14px;border-radius:6px;margin:16px 0;font-size:.95rem}
+.crit{border-color:var(--critb);background:var(--crit)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:6px 0 20px}
+.bar i{display:block;height:100%;background:var(--acc);transition:width .3s}
+.meta{display:flex;justify-content:space-between;color:var(--mut);font-size:.88rem}
+.q{font-size:1.3rem;margin:14px 0 18px}
+.sec{color:var(--acc);font-size:.9rem;font-weight:600}
+.opt{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 9px;cursor:pointer}
+.opt:hover{border-color:var(--acc)}
+.opt.on{border-color:var(--acc);background:var(--acc2)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.btn{font:inherit;font-weight:600;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px 20px;cursor:pointer}
+:root[data-theme="dark"] .btn{color:#0d1a1e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#0d1a1e}}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.ghost{font:inherit;background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 16px;cursor:pointer}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:16px 0}
+.chk input{margin-top:5px;width:18px;height:18px}
+.cl{margin:10px 0}
+.cl .t{display:flex;justify-content:space-between;font-size:.92rem}
+.cl .b{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:4px}
+.cl .b i{display:block;height:100%;background:var(--acc)}
+.tag{display:inline-block;background:var(--acc2);border-radius:999px;padding:3px 12px;font-size:.88rem;margin:0 6px 6px 0}
+.hide{display:none}
+@media print{body{background:#fff;color:#000}.noprint{display:none}.card{border:0;padding:0}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Cuestionario de cribado postraumático</h1>
+<p class="sub">Entre 28 y 35 preguntas, unos 10 minutos: cambian según lo que vayas respondiendo.</p>
+<div id="app"></div>
+</main>
+<script>
+const SC=["Nada","Un poco","Moderadamente","Bastante","Extremadamente"];
+const FR=["Nunca","Rara vez","A veces","A menudo","Casi siempre"];
+const Q=[
+{id:"q1",s:"Contexto",t:"¿Has vivido o presenciado alguna situación que pusiera en riesgo tu vida, tu integridad o la de otras personas?",o:["No, ninguna situación así","Sí, un evento puntual","Sí, varios eventos o una situación repetida o prolongada","Sí, de forma repetida durante la infancia o la adolescencia"]},
+{id:"q2",s:"Contexto",t:"¿Qué tipo de situación se parece más a lo que viviste?",o:["Accidente o desastre natural","Agresión física, asalto o violencia sexual","Combate, servicio militar o trabajo de emergencias","Muerte violenta o inesperada de un ser querido","Haber presenciado un hecho grave o violento","Otro tipo de situación"]},
+{id:"q3",s:"Contexto",t:"¿Cuánto tiempo ha pasado desde el evento (o desde que terminó)?",o:["Menos de 1 mes","Entre 1 y 6 meses","Entre 6 meses y 1 año","Más de 1 año"]},
+{id:"q4",s:"Contexto",t:"¿Cuándo empezaron a notarse las molestias?",o:["Casi de inmediato","En las primeras semanas","Meses después (6 meses o más tras el evento)"],v:a=>a.q3>=2},
+{id:"b1",c:"B",s:"Recuerdos que vuelven",t:"Durante el último mes, ¿has tenido recuerdos desagradables, intensos e involuntarios del evento?"},
+{id:"b2",c:"B",s:"Recuerdos que vuelven",t:"¿Has tenido pesadillas relacionadas con lo ocurrido?"},
+{id:"b3",c:"B",s:"Recuerdos que vuelven",t:"¿Has sentido o actuado como si el evento estuviera ocurriendo otra vez (escenas retrospectivas o flashbacks)?"},
+{id:"b4",c:"B",s:"Recuerdos que vuelven",t:"¿Te ha provocado un malestar emocional intenso algo que te recordaba el evento?"},
+{id:"b5",c:"B",s:"Recuerdos que vuelven",t:"¿Has tenido reacciones físicas (palpitaciones, sudor, temblor) ante esos recordatorios?"},
+{id:"c1",c:"C",s:"Evitación",t:"¿Has evitado pensamientos, sentimientos o conversaciones relacionados con lo ocurrido?"},
+{id:"c2",c:"C",s:"Evitación",t:"¿Has evitado lugares, personas, objetos o situaciones que te lo recuerdan?"},
+{id:"d1",c:"D",s:"Pensamientos y estado de ánimo",t:"¿Te cuesta recordar partes importantes del evento?"},
+{id:"d2",c:"D",s:"Pensamientos y estado de ánimo",t:"¿Has tenido creencias negativas muy fuertes sobre ti o el mundo, como «no se puede confiar en nadie» o «algo está roto en mí»?"},
+{id:"d3",c:"D",s:"Pensamientos y estado de ánimo",t:"¿Te has culpado a ti mismo o a otras personas de lo sucedido de forma persistente?"},
+{id:"d4",c:"D",s:"Pensamientos y estado de ánimo",t:"¿Has sentido de forma continua miedo, horror, rabia, culpa o vergüenza?"},
+{id:"d5",c:"D",s:"Pensamientos y estado de ánimo",t:"¿Has perdido interés en actividades que antes disfrutabas?"},
+{id:"d6",c:"D",s:"Pensamientos y estado de ánimo",t:"¿Te has sentido distante o separado de las demás personas?"},
+{id:"e1",c:"E",s:"Alerta y activación",t:"¿Has estado irritable o has tenido arrebatos de ira?"},
+{id:"e2",c:"E",s:"Alerta y activación",t:"¿Has hecho cosas imprudentes o que podían hacerte daño?"},
+{id:"e3",c:"E",s:"Alerta y activación",t:"¿Has estado en alerta constante, vigilando tu entorno?"},
+{id:"e4",c:"E",s:"Alerta y activación",t:"¿Te has sobresaltado con facilidad ante ruidos o movimientos?"},
+{id:"e5",c:"E",s:"Alerta y activación",t:"¿Has tenido dificultad para concentrarte?"},
+{id:"e6",c:"E",s:"Alerta y activación",t:"¿Has tenido problemas para conciliar o mantener el sueño?"},
+{id:"f1",c:"F",s:"Desconexión",t:"¿Has sentido que estabas fuera de tu cuerpo o que te observabas desde fuera?",v:a=>sum(a,"BC")>=4},
+{id:"f2",c:"F",s:"Desconexión",t:"¿Has sentido que el mundo a tu alrededor era irreal, borroso o como un sueño?",v:a=>sum(a,"BC")>=4},
+{id:"f3",c:"F",s:"Desconexión",t:"¿Te has quedado en blanco o has «desconectado», perdiendo la noción del tiempo?",v:a=>sum(a,"BC")>=4},
+{id:"g1",c:"G",s:"Emociones y relaciones",t:"¿Te ha costado calmarte cuando te alteras, con emociones que te desbordan?",v:a=>a.q1>=2},
+{id:"g2",c:"G",s:"Emociones y relaciones",t:"¿Has sentido entumecimiento emocional, como si no pudieras sentir nada?",v:a=>a.q1>=2},
+{id:"g3",c:"G",s:"Emociones y relaciones",t:"¿Te has sentido derrotado, sin valor o un fracaso?",v:a=>a.q1>=2},
+{id:"g4",c:"G",s:"Emociones y relaciones",t:"¿Has sentido una vergüenza o culpa profunda sobre quién eres?",v:a=>a.q1>=2},
+{id:"g5",c:"G",s:"Emociones y relaciones",t:"¿Te ha costado confiar en otras personas o mantener relaciones cercanas?",v:a=>a.q1>=2},
+{id:"g6",c:"G",s:"Emociones y relaciones",t:"¿Te has aislado o sentido muy distinto a los demás?",v:a=>a.q1>=2},
+{id:"h1",s:"Impacto en tu vida",t:"¿Hasta qué punto estas molestias han afectado tu trabajo, estudios, familia o relaciones?"},
+{id:"h2",s:"Impacto en tu vida",t:"¿Has usado alcohol, medicamentos u otras sustancias para aliviar lo que sientes?",f:1},
+{id:"h3",s:"Impacto en tu vida",t:"¿Has tenido pensamientos de hacerte daño o de que sería mejor no estar?",f:1}
+];
+const sum=(a,cl)=>Q.filter(q=>q.c&&cl.includes(q.c)).reduce((s,q)=>s+(a[q.id]||0),0);
+const app=document.getElementById("app");
+let a={},path=[],cur=null,view="intro";
+const vis=(q)=>!q.v||q.v(a);
+function nextAfter(id){let i=id?Q.findIndex(q=>q.id===id)+1:0;for(;i<Q.length;i++){if(a.q1===0&&Q[i].id!=="q1")return null;if(vis(Q[i]))return Q[i];}return null}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+const DISC="Esta herramienta es solo un cribado previo y un apoyo para el profesional. No es un diagnóstico. Para una evaluación completa y precisa debes acudir a un psicólogo, psiquiatra u otro profesional de la salud mental.";
+function intro(){
+app.innerHTML=`<div class="card"><h2>Antes de empezar</h2>
+<p>Este cuestionario explora síntomas relacionados con experiencias traumáticas durante el último mes. Responde con sinceridad; no hay respuestas correctas ni incorrectas. Puedes parar cuando quieras. Nada se guarda ni se envía: tus respuestas permanecen solo en esta página.</p>
+<div class="box"><strong>Importante.</strong> ${DISC}</div>
+<label class="chk"><input type="checkbox" id="ok"><span>Entiendo que esto no sustituye una evaluación profesional.</span></label>
+<button class="btn" id="go" disabled>Comenzar</button></div>`;
+const ok=document.getElementById("ok"),go=document.getElementById("go");
+ok.onchange=()=>go.disabled=!ok.checked;
+go.onclick=()=>{cur=nextAfter(null);path=[cur.id];view="q";render()};
+}
+function rest(){let n=0,i=Q.findIndex(q=>q.id===cur.id)+1;for(;i<Q.length;i++){if(a.q1===0)break;if(vis(Q[i]))n++}return n}
+function question(){
+const q=cur,opts=q.o||(q.f?FR:SC),done=path.length-1,tot=done+1+rest(),sel=a[q.id];
+const crisis=(a.h3>=1&&q.id==="h3")||false;
+app.innerHTML=`<div class="meta"><span>${esc(q.s)}</span><span>${done+1} de ${tot}</span></div>
+<div class="bar"><i style="width:${Math.round(done/tot*100)}%"></i></div>
+<div class="card"><p class="q">${esc(q.t)}</p>
+${q.o?"":`<p class="sub" style="margin-top:-8px">${q.f?"Durante el último mes:":"Durante el último mes, qué tanto:"}</p>`}
+${opts.map((o,i)=>`<button class="opt${sel===i?" on":""}" data-i="${i}">${esc(o)}</button>`).join("")}
+<div class="row">${path.length>1?'<button class="ghost" id="back">Atrás</button>':""}</div></div>`;
+app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{a[q.id]=+b.dataset.i;b.classList.add("on");setTimeout(()=>advance(q),160)});
+const bk=document.getElementById("back");if(bk)bk.onclick=()=>{path.pop();cur=Q.find(x=>x.id===path[path.length-1]);render()};
+}
+function advance(q){
+const n=nextAfter(q.id);
+if(!n){view="res";render();return}
+cur=n;path.push(n.id);render();window.scrollTo(0,0);
+}
+function render(){view==="intro"?intro():view==="q"?question():result()}
+function result(){
+const n=(ids,min)=>ids.filter(i=>(a[i]||0)>=(min||2)).length;
+const B=["b1","b2","b3","b4","b5"],C=["c1","c2"],D=["d1","d2","d3","d4","d5","d6"],E=["e1","e2","e3","e4","e5","e6"];
+const nB=n(B),nC=n(C),nD=n(D),nE=n(E),all=[...B,...C,...D,...E];
+const total=all.reduce((s,i)=>s+(a[i]||0),0),cnt=nB+nC+nD+nE;
+const core=nB>=1&&nC>=1&&nD>=2&&nE>=2,impair=(a.h1||0)>=2;
+const icd=nB>=1&&nC>=1&&nE>=1;
+const dso=n(["g1","g2"])>=1&&n(["g3","g4"])>=1&&n(["g5","g6"])>=1;
+const complex=a.q1>=2&&icd&&dso&&impair;
+const diss=n(["f1","f2"])>=1&&(Math.max(a.f1||0,a.f2||0)>=2);
+const late=a.q4===2;
+let title,desc,extra=[];
+if(a.q1===0){title="Sin evento traumático referido";desc="Indicaste no haber vivido una situación de este tipo, por lo que este cuestionario no aplica. Si aun así hay algo que te preocupa o te genera malestar, un profesional puede ayudarte a explorarlo."}
+else if(a.q3===0&&cnt>=5){title="Reacción de estrés agudo";desc="El evento es muy reciente (menos de un mes) y hay varios síntomas relevantes. Es una reacción frecuente; si persiste o se intensifica, puede evolucionar hacia un trastorno de estrés postraumático, así que conviene consultar pronto."}
+else if(complex){title="Perfil compatible con TEPT complejo";desc="Además de los síntomas centrales (recuerdos, evitación, alerta), aparecen dificultades para regular las emociones, una imagen negativa de ti y problemas en las relaciones. Este patrón se asocia con experiencias repetidas o prolongadas, sobre todo en etapas tempranas de la vida (descrito en la CIE-11)."}
+else if(core&&impair&&diss){title="Perfil compatible con TEPT con síntomas disociativos";desc="Cumples el patrón central de síntomas postraumáticos junto con experiencias frecuentes de desconexión (sentirte fuera de tu cuerpo o que el entorno es irreal). Es un subtipo reconocido en el DSM-5 y suele requerir un abordaje terapéutico específico."}
+else if(core&&impair&&late){title="Perfil compatible con TEPT de expresión tardía";desc="Los síntomas cumplen el patrón de TEPT, pero comenzaron o se hicieron evidentes meses después del evento (6 meses o más). Es una forma descrita en el DSM-5 como TEPT con expresión retardada."}
+else if(core&&impair){title="Perfil compatible con TEPT clásico";desc="Presentas síntomas de reexperimentación, evitación, cambios negativos en pensamientos y ánimo, y activación aumentada, con impacto en tu vida diaria. Es el patrón típico tras un evento traumático."}
+else if(cnt>=4||total>=15){title="Síntomas postraumáticos por debajo del umbral";desc="Hay síntomas que merecen atención, aunque no cumplen todos los patrones habituales de TEPT o su impacto funcional es limitado. Esto no significa que no sufras: una valoración profesional puede ayudarte a entender qué ocurre."}
+else{title="Pocos síntomas postraumáticos";desc="Tus respuestas muestran pocos síntomas en el último mes. Si el malestar o el recuerdo del evento te preocupan, hablarlo con un profesional siempre es válido."}
+if(a.q1>0&&title!==""&&!/disociativos/.test(title)&&diss&&cnt>=4)extra.push("Rasgos disociativos");
+if(a.q1>0&&!/tardía/.test(title)&&late&&cnt>=4)extra.push("Inicio tardío de los síntomas");
+if(a.q1>0&&!/complejo/.test(title)&&a.q1>=2)extra.push("Exposición repetida o prolongada");
+const sev=total<15?"mínima":total<30?"leve":total<45?"moderada":"alta";
+const bars=[["Reexperimentación",B],["Evitación",C],["Pensamientos y ánimo",D],["Alerta y activación",E]].map(([l,ids])=>{const m=ids.length*4,s=ids.reduce((x,i)=>x+(a[i]||0),0),p=Math.round(s/m*100);return `<div class="cl"><div class="t"><span>${l}</span><span>${p}%</span></div><div class="b"><i style="width:${p}%"></i></div></div>`}).join("");
+const crisis=(a.h3||0)>=1?`<div class="box crit"><strong>Si tienes pensamientos de hacerte daño,</strong> no esperes: habla hoy con alguien de confianza y contacta con los servicios de emergencia o la línea de salud mental de tu país. No tienes que atravesarlo solo.</div>`:"";
+app.innerHTML=`<div class="card"><h2>Resultado orientativo</h2>${crisis}
+<div class="box"><strong>Aviso.</strong> ${DISC}</div>
+${a.q1===0?"":`<p class="sub" style="margin:14px 0 4px">Perfil más cercano a tus respuestas</p>`}
+<p class="q" style="margin-top:0;font-size:1.45rem">${title}</p><p>${desc}</p>
+${extra.length?`<p>${extra.map(e=>`<span class="tag">${e}</span>`).join("")}</p>`:""}
+${a.q1===0?"":`<p><strong>Intensidad global de síntomas:</strong> ${sev}</p>${bars}
+<p class="sub" style="font-size:.88rem">Los porcentajes comparan tu puntuación con el máximo posible en cada grupo de síntomas.</p>`}
+<h2 style="font-size:1.1rem;margin-top:18px">Qué hacer con este resultado</h2>
+<p>Lleva esta hoja a un psicólogo o psiquiatra: le servirá como punto de partida, pero será él quien confirme, descarte o matice cualquier hipótesis mediante una entrevista clínica. Este cuestionario se inspira en los criterios del DSM-5 y la CIE-11, pero no es una escala clínica validada.</p>
+<div class="box"><strong>Recuerda:</strong> este resultado no es un diagnóstico. Es una herramienta de apoyo previa; el diagnóstico completo y preciso solo puede darlo un profesional de la salud mental.</div>
+<div class="row noprint"><button class="btn" onclick="window.print()">Imprimir o guardar en PDF</button><button class="ghost" id="rs">Empezar de nuevo</button></div></div>`;
+document.getElementById("rs").onclick=()=>{a={};path=[];cur=null;view="intro";render();window.scrollTo(0,0)};
+window.scrollTo(0,0);
+}
+render();
+</script>
+</body>
+</html>
